@@ -27,6 +27,17 @@ def print_output(params, param_modes, code):
     if param_modes[0] == 0 : print(code[params[0]])
     else                   : print(params[0])
 
+def conditional_jump(bool):
+    def ret_func(params, param_modes, code):
+        effective_params = []
+        for m, p in zip(param_modes, params):
+            if m == 1 : effective_params.append(p)
+            else      : effective_params.append(code[p])
+        if (effective_params[0] != 0) == bool:
+            return effective_params[1]
+        return None
+    return ret_func
+
 
 def terminate(*args, **kvargs):
     exit(0)
@@ -35,8 +46,12 @@ def terminate(*args, **kvargs):
 operations = {
      1 : (arithmetic_op(operator.add), 3),
      2 : (arithmetic_op(operator.mul), 3),
-     3: (read_input, 1),
+     3 : (read_input, 1),
      4 : (print_output, 1),
+     5 : (conditional_jump(True), 2),
+     6 : (conditional_jump(False), 2),
+     7 : (arithmetic_op(operator.lt), 3),
+     8 : (arithmetic_op(operator.eq), 3),
     99 : (terminate, 0)
 }
 
@@ -65,13 +80,13 @@ def main(fn, _sys_id):
         #     params.append(next(code_iter))
         params = code[ptr + 1 : ptr + 1 + num_params]
         ptr += num_params
-        operations[opcode][0](params=params, param_modes=param_modes, code=code)
-        ptr += 1
+        new_ptr = operations[opcode][0](params=params, param_modes=param_modes, code=code)
+        ptr = new_ptr if new_ptr else ptr + 1
 
 
 if __name__ == '__main__':
     fn = argv[1] if len(argv) >= 2 else 'input.txt'
-    ret = main(fn, 1)
+    ret = main(fn, 5)
 
 
 # 123450
