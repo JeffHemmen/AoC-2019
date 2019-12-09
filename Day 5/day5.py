@@ -53,15 +53,20 @@ def main(fn, _sys_id):
     sys_id = _sys_id
     with open(fn, 'r') as f:
         code = [int(x) for x in f.read().split(',')]
-    code_iter = iter(code)
-    for inst in code_iter:
+    ptr = 0
+    while True:
+        inst = code[ptr]
         # print('Instruction:', inst)
         opcode = inst % 100
-        param_modes = get_param_modes(inst, operations[opcode][1])
-        params = []
-        for _ in range(0, operations[opcode][1]):
-            params.append(next(code_iter))
+        num_params = operations[opcode][1]
+        param_modes = get_param_modes(inst, num_params)
+        # params = []
+        # for _ in range(0, operations[opcode][1]):
+        #     params.append(next(code_iter))
+        params = code[ptr + 1 : ptr + 1 + num_params]
+        ptr += num_params
         operations[opcode][0](params=params, param_modes=param_modes, code=code)
+        ptr += 1
 
 
 if __name__ == '__main__':
