@@ -64,7 +64,7 @@ def conditional_jump(bool):
         # print(f'params={params}, param_modes={param_modes}')
         # print(f'conditional_jump({bool}) with effective_params[0]={effective_params[0]}; returning: ', end='')
         if (effective_params[0] != 0) == bool:
-            print(effective_params[1])
+            # print(effective_params[1])
             return effective_params[1]
         # print("None")
         return None
@@ -134,5 +134,8 @@ def main(fn, _sys_id):
 
 if __name__ == '__main__':
     fn = argv[1] if len(argv) >= 2 else 'input.txt'
-    ret = main(fn, 1)
-
+    # Part 1
+    #main(fn, 1)
+    
+    # Part 2
+    main(fn, 2)
