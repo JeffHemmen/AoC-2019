@@ -136,6 +136,6 @@ if __name__ == '__main__':
     fn = argv[1] if len(argv) >= 2 else 'input.txt'
     # Part 1
     #main(fn, 1)
-    
+
     # Part 2
     main(fn, 2)
