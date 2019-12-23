@@ -3,7 +3,7 @@ from collections.abc import Generator
 from math import ceil, log
 from sys import argv
 import operator
-from itertools import cycle
+from itertools import cycle, permutations
 
 
 class Intcode(Generator):
@@ -121,14 +121,12 @@ class Intcode(Generator):
         return modes
 
 
-def main(fn, phase_setting):
-    with open(fn, 'r') as f:
-        code = [int(x) for x in f.read().split(',')]
+def try_permutation(code, phase_settings):
     amplifiers = dict()
-    for phase_setting, amplifier_name in enumerate('ABCDE', 5):
+    for phase_setting, amplifier_name in zip(phase_settings, 'ABCDE'):
         amplifiers[amplifier_name] = Intcode(code)
         next(amplifiers[amplifier_name])
-        amplifiers[amplifier_name].send(phase_setting)
+        amplifiers[amplifier_name].send([phase_setting])
     signal = 0
     for amplifier_name in cycle('ABCDE'):
         try:
@@ -136,22 +134,26 @@ def main(fn, phase_setting):
         except StopIteration:
             if amplifier_name == 'E':
                 break
-            print(f'Amp {amplifier_name} terminated.')
         assert len(outputs) == 1
         signal = outputs[0]
-    print(f'Last output: {signal}')
+    return signal
+
+
+def main(code, phase_setting_values):
+    highest_output = 0
+    for permutation in permutations(phase_setting_values):
+        output = try_permutation(code, permutation)
+        if output > highest_output:
+            highest_output = output
+    return highest_output
 
 
 if __name__ == '__main__':
     fn = argv[1] if len(argv) >= 2 else 'input.txt'
-    with open('../Day 5/input.txt', 'r') as f:
+    with open(fn, 'r') as f:
         code = [int(x) for x in f.read().split(',')]
-    day5_part1 = Intcode(code)
-    outputs = day5_part1.send([1])
-    print(f'Day 5 Part 1: {outputs}')
+    part1 = main(code, range(0, 5))
+    print(f'Part 1: {part1}')
+    part2 = main(code, range(5, 10))
+    print(f'Part 2: {part2}')
 
-    day5_part2 = Intcode(code)
-    outputs = day5_part2.send([5])
-    print(f'Day 5 Part 2: {outputs}')
-
-    # Day 7 to be done
